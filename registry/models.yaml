@@ -1,0 +1,77 @@
+# Model registry
+#
+# status: candidate | experimental | production-approved | rejected
+# license_status: green | yellow | red | unknown
+#
+# Never commit model weights to this repository.
+
+models:
+  - id: wan2.2-ti2v-5b
+    role: video
+    status: candidate
+    license_status: green
+    license: Apache-2.0
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Primary I2V/T2V candidate. Need low-VRAM quantization/offload validation on 6 GB VRAM.
+
+  - id: ltx-video-2b-distilled
+    role: video
+    status: candidate
+    license_status: unknown
+    license: VERIFY_EXACT_CHECKPOINT
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Low-VRAM previz candidate. Verify exact weights license before production approval.
+
+  - id: cogvideox-2b
+    role: video
+    status: candidate
+    license_status: green
+    license: Apache-2.0
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Secondary video backend candidate.
+
+  - id: ace-step-1.5
+    role: music
+    status: candidate
+    license_status: green
+    license: MIT
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Primary music generation candidate.
+
+  - id: kokoro
+    role: tts
+    status: candidate
+    license_status: green
+    license: Apache-2.0
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Validate Russian narration quality.
+
+  - id: mmaudio
+    role: video-to-sfx
+    status: rejected
+    license_status: red
+    license: CC-BY-NC-4.0 pretrained weights
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Experimental only; do not use in production master.
+
+  - id: wav2lip
+    role: lip-sync
+    status: rejected
+    license_status: red
+    license: non-commercial public checkpoint
+    source: TBD
+    exact_checkpoint: TBD
+    sha256: TBD
+    notes: Do not use in production master.

@@ -1,0 +1,57 @@
+# Model weights / large binaries
+models/**
+!models/.gitkeep
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.gguf
+*.onnx
+*.bin
+
+# Outputs / cache
+cache/**
+!cache/.gitkeep
+outputs/**
+!outputs/.gitkeep
+temp/
+tmp/
+
+# Local vendor installs
+vendor/**
+!vendor/.gitkeep
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# ComfyUI runtime/user data
+ComfyUI/input/
+ComfyUI/output/
+ComfyUI/temp/
+ComfyUI/models/
+
+# Media
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+*.wav
+*.flac
+*.mp3
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem

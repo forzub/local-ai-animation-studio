@@ -6,6 +6,16 @@
 # Never commit model weights to this repository.
 
 models:
+  - id: sd15-fp16-diagnostic
+    role: image
+    status: experimental
+    license_status: yellow
+    license: CreativeML-OpenRAIL-M
+    source: https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive
+    exact_checkpoint: v1-5-pruned-emaonly-fp16.safetensors
+    sha256: e9476a13728cd75d8279f6ec8bad753a66a1957ca375a1464dc63b37db6e3916
+    notes: Diagnostic baseline only. End-to-end ComfyUI generation accepted on Quadro RTX 3000 6 GB. Not selected as production image model.
+
   - id: wan2.2-ti2v-5b
     role: video
     status: candidate

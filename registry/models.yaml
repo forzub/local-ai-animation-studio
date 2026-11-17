@@ -60,6 +60,63 @@ models:
     studio_recipe: studio/recipes/wan.py
     notes: Studio video model (t2v / i2v). 2 s at 832x480 ~13 min, draft ~2-5 min. Characters drift at draft resolution; T2V weak. Upgrade candidate - Wan 2.2 I2V A14B GGUF + lightx2v 4-step LoRA.
 
+  - id: qwen-image-2.1
+    role: image
+    status: production-approved
+    license_status: green
+    license: Apache-2.0
+    source: https://huggingface.co/Comfy-Org/Qwen-Image-2.1
+    exact_checkpoint: diffusion_models/qwen_image_2.1_turbo_int8_convrot.safetensors
+    sha256: 8144a0182964aa8403ad6dbc011db837304167d235161b9aabaa8532e967314c
+    components:
+      - text_encoders/qwen3vl_8b_int8_convrot.safetensors  # 8bfd0f6e12abf2d2d697ecc888e5e90b0d6741d6708f05799f53afa560452e8f
+      - vae/qwen_image_2.1_vae_bf16.safetensors             # bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9
+    studio_recipe: studio/recipes/images.py (QwenImage21)
+    notes: Downloaded and hash-verified 2026-11-17 (needs ComfyUI >= Sep 2026, engine updated to ee34406f5). t2i 16:9 1 MP 138 s; edit with 2 refs (base + style) 339 s. Turbo, fixed 8 sigmas, cfg 1.
+
+  - id: z-image-turbo
+    role: image
+    status: production-approved
+    license_status: green
+    license: Apache-2.0
+    source: https://huggingface.co/Comfy-Org/Z-Image-Turbo
+    exact_checkpoint: diffusion_models/z_image_turbo_int8_convrot.safetensors
+    sha256: be517ebd47c912a5626a588e1aeea43e6be4a43c0cdcd2b48a2a780d9f358635
+    components:
+      - text_encoders/qwen_3_4b.safetensors  # shared with FLUX.2 Klein
+      - vae/ae.safetensors                   # afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38 (FLUX.1 VAE)
+    studio_recipe: studio/recipes/images.py (ZImageTurbo)
+    notes: Downloaded and hash-verified 2026-11-17. t2i 16:9 1 MP 102 s incl. first load. No reference mechanism - t2i and img2img only.
+
+  - id: qwen-image-edit-2509
+    role: image
+    status: experimental
+    license_status: green
+    license: Apache-2.0
+    source: UNVERIFIED - Comfy-Org/Qwen-Image-Edit_ComfyUI (fp8) + lightx2v Qwen-Image-Lightning (LoRA); downloaded before this session
+    exact_checkpoint: diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors
+    sha256: 318568f61951ab9da21100c7b896e3c1da67f0d2efad6421545e022cfaa2b2b4
+    components:
+      - loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors  # 2a32ce938ec71db2b49a817b4844ae86995569518dea56ee0ddc209cbe8e1377
+      - text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors                 # cb5636d852a0ea6a9075ab1bef496c0db7aef13c02350571e388aea959c5c0b4
+      - vae/qwen_image_vae.safetensors                                      # a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f
+    studio_recipe: studio/recipes/images.py (QwenEdit2509)
+    notes: 20B, streamed from RAM on 6 GB. Up to 3 refs, 4 steps. Edit 1 MP with 2 refs (base + style) - 5276 s (88 min); quality good. Practical only as a fallback to Qwen-Image 2.1.
+
+  - id: chroma1-hd
+    role: image
+    status: experimental
+    license_status: green
+    license: Apache-2.0
+    source: UNVERIFIED - Chroma1-HD fp8mixed (Comfy-Org / lodestones); downloaded before this session
+    exact_checkpoint: diffusion_models/Chroma1-HD-fp8mixed-final.safetensors
+    sha256: c25284ddf89df1678ac4dd7bd8a59ec68fb2e484296d75977c549d58618eee91
+    components:
+      - text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors  # a498f0485dc9536735258018417c3fd7758dc3bccc0a645feaa472b34955557a
+      - vae/ae.safetensors
+    studio_recipe: studio/recipes/images.py (Chroma1HD)
+    notes: t2i 16:9 1 MP 26 steps cfg 3.5 - 837 s (~30 s/step). Loose prompt adherence. t2i and img2img only.
+
   - id: ltx-video-2b-distilled
     role: video
     status: candidate

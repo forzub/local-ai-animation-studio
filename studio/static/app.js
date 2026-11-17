@@ -62,7 +62,7 @@ function setMode(mode) {
   $("#strengthRow").hidden = mode !== "i2i";
   $("#imageOpts").hidden = S.kind !== "image";
   $("#videoOpts").hidden = S.kind !== "video";
-  $("#negativeRow").hidden = S.kind !== "video";
+  $("#negativeRow").hidden = !m?.uses_negative;
   // назначить исходник, если режим его требует
   const need = MODE_HINT_ROLE[mode];
   if (need && S.refs.length && !S.refs.some((r) => r.role === need) && m?.ref_roles.includes(need)) S.refs[0].role = need;
@@ -167,8 +167,8 @@ function collectParams() {
   if (S.kind === "video") {
     p.duration = Number(S.video.duration); p.resolution = S.video.resolution; p.camera = S.video.camera || null;
     p.count = 1;
-    p.negative = $("#negative").value.trim() || null;
   }
+  if (currentModel()?.uses_negative) p.negative = $("#negative").value.trim() || null;
   return p;
 }
 
@@ -214,7 +214,12 @@ async function useOutput(job, out, action) {
   const u = await api("/api/uploads/from-output", { method: "POST", body: JSON.stringify({ job_id: job.id, file: out.file, frame }) });
   if (action === "ref") { addRefFromUpload(u); return; }
   if (action === "edit") {
-    setKind("image"); setMode("edit");
+    setKind("image");
+    if (!currentModel()?.modes.edit) {
+      const em = S.models.find((x) => x.kind === "image" && x.modes.edit && !x.missing.length);
+      if (em) setModel(em.id);
+    }
+    setMode("edit");
     S.refs = S.refs.filter((r) => r.role !== "base");
     S.refs.unshift({ upload_id: u.upload_id, url: u.url, role: "base" });
     renderRefs();

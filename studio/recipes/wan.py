@@ -50,6 +50,7 @@ def video_size(ratio, short, multiple):
 
 
 class WanBase(Recipe):
+    uses_negative = True
     kind = "video"
     max_refs = 6
     license = "Apache-2.0"

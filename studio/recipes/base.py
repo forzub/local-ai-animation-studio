@@ -38,8 +38,11 @@ def size_like(width, height, megapixels, multiple=16):
     return max(multiple, round(width * scale / multiple) * multiple), max(multiple, round(height * scale / multiple) * multiple)
 
 
-def role_prompt(refs, prompt):
-    lines = [ROLE_INSTRUCTIONS[r["role"]].format(n=i + 1) for i, r in enumerate(refs) if r["role"] in ROLE_INSTRUCTIONS]
+def role_prompt(refs, prompt, tag="image {n}"):
+    """tag — как модель называет референс N: FLUX.2 и Qwen-Edit — «image N», Qwen-Image 2.1 — «<imageN>»."""
+    cap = tag[0].upper() + tag[1:]
+    lines = [ROLE_INSTRUCTIONS[r["role"]].replace("Image {n}", cap).replace("image {n}", tag).format(n=i + 1)
+             for i, r in enumerate(refs) if r["role"] in ROLE_INSTRUCTIONS]
     return "\n".join(lines + [prompt]) if lines else prompt
 
 
@@ -57,6 +60,7 @@ class Recipe:
     defaults = {}
     video_options = None
     heavy = False  # перед запуском выгружать все модели из VRAM
+    uses_negative = False  # показывать поле негативного промпта
 
     def missing_files(self):
         return [f for f in self.files if not (config.COMFY_MODELS / f).exists()]
@@ -66,7 +70,7 @@ class Recipe:
             "id": self.id, "name": self.name, "kind": self.kind, "modes": self.modes,
             "max_refs": self.max_refs, "ref_roles": self.ref_roles, "license": self.license,
             "description": self.description, "limits": self.limits, "defaults": self.defaults,
-            "video_options": self.video_options,
+            "video_options": self.video_options, "uses_negative": self.uses_negative,
             "missing": self.missing_files(),
         }
 

@@ -174,7 +174,17 @@ async def _run(job):
                 if step is not None and total:
                     state["progress"] = (i + (s + step / total) / n_stages) / count
 
-            result = await engine.run(graph, on_progress, lambda: job_id in _cancel)
+            if role is None and recipe.heavy:
+                state["stage"] = "Освобождение видеопамяти"
+                await engine.free_memory()
+            try:
+                result = await engine.run(graph, on_progress, lambda: job_id in _cancel)
+            except ComfyError as e:
+                if not e.oom:
+                    raise
+                state["stage"] = "Не хватило видеопамяти — очистка и повтор"
+                await engine.free_memory()
+                result = await engine.run(graph, on_progress, lambda: job_id in _cancel)
             files = collect(result, meta, role)
             if role == "keyframe":
                 if not files:

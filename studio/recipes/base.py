@@ -56,6 +56,7 @@ class Recipe:
     limits = []  # честные ограничения, показываются в интерфейсе
     defaults = {}
     video_options = None
+    heavy = False  # перед запуском выгружать все модели из VRAM
 
     def missing_files(self):
         return [f for f in self.files if not (config.COMFY_MODELS / f).exists()]

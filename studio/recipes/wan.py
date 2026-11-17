@@ -191,11 +191,13 @@ class WanI2V14B(WanBase):
     size_multiple = 16
     end_frame = True
     keyframe_from_prompt = True
+    heavy = True
     description = ("Качественная модель image-to-video (две экспертные модели high/low noise) с ускорением lightx2v до 4 шагов. "
                    "Умеет переход от начального к конечному кадру.")
     limits = [
         "Text-to-video нет: без начального кадра он строится в Klein 4B по промпту и референсам.",
         "16 кадров/с (родная частота модели).",
+        "Замеры на Quadro RTX 3000, 2 с видео: 480p ≈ 12 мин, 720p (1280×720) ≈ 50 мин. Время растёт примерно пропорционально длительности.",
         "Шаги больше 4 с LoRA lightx2v не улучшают результат; CFG фиксирован = 1.",
     ]
     defaults = {"steps": 4}
@@ -204,7 +206,7 @@ class WanI2V14B(WanBase):
         super().__init__()
         self.video_options = self.video_opts(
             {"draft": "Черновик · 640×352", "sd": "480p · 848×480 (родное)", "hd": "720p · 1280×720"},
-            "hd", "720p на 6 ГБ — самое медленное; 480p — родное разрешение этой квантизации и заметно быстрее.")
+            "hd", "2 с: 480p ≈ 12 мин, 720p ≈ 50 мин. Удобно подобрать движение на 480p с тем же seed, затем сделать финал в 720p.")
 
     def build(self, p, refs, index):
         start = next((r for r in refs if r["role"] == "start"), None)

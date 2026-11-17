@@ -170,7 +170,15 @@ class ComfyEngine:
                     break
         finally:
             await ws.close()
-        hist = await self._history(prompt_id)
+        # Сообщения о завершении приходят до записи истории (task_done) — ждём, пока она появится.
+        hist = {}
+        for _ in range(120):
+            hist = await self._history(prompt_id)
+            if hist.get("status", {}).get("completed") is not None:
+                break
+            await asyncio.sleep(0.5)
+        else:
+            raise ComfyError("Движок не записал результат задачи в историю за 60 секунд")
         status = hist.get("status", {})
         if status.get("status_str") == "error":
             for kind, d in status.get("messages", []):

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local AI Studio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">Local AI Studio</div>
+  <nav class="kind-tabs" id="kindTabs">
+    <button data-kind="image" class="active">Изображение</button>
+    <button data-kind="video">Видео</button>
+  </nav>
+  <div class="status" id="status" title="Состояние движка">движок запускается…</div>
+</header>
+
+<main class="layout">
+  <form class="composer" id="composer" autocomplete="off">
+    <section>
+      <label class="lbl">Режим</label>
+      <div class="seg" id="modeSeg"></div>
+    </section>
+
+    <section>
+      <label class="lbl" for="model">Модель</label>
+      <select id="model"></select>
+      <p class="hint" id="modelDesc"></p>
+      <details class="limits" id="modelLimits"><summary>Ограничения модели</summary><ul></ul></details>
+    </section>
+
+    <section id="refsSection">
+      <label class="lbl">Референсы <span class="muted" id="refCount"></span></label>
+      <div class="refs" id="refs"></div>
+      <div class="drop" id="drop" tabindex="0">
+        <span>Перетащите изображения, вставьте (Ctrl+V) или <u>выберите файлы</u></span>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      </div>
+    </section>
+
+    <section>
+      <label class="lbl" for="prompt">Промпт</label>
+      <textarea id="prompt" rows="6" placeholder="Опишите, что нужно получить. Ctrl+Enter — генерировать"></textarea>
+    </section>
+
+    <section id="imageOpts">
+      <div class="row" id="aspectRow">
+        <label class="lbl">Формат</label>
+        <div class="chips" id="aspects"></div>
+      </div>
+      <div class="row">
+        <label class="lbl" for="quality">Разрешение</label>
+        <select id="quality">
+          <option value="0.5">Черновик · 0,5 Мп</option>
+          <option value="1" selected>Стандарт · 1 Мп</option>
+          <option value="1.5">Высокое · 1,5 Мп</option>
+          <option value="2">Максимум · 2 Мп</option>
+        </select>
+      </div>
+      <div class="row">
+        <label class="lbl" for="count">Вариантов</label>
+        <div class="chips" id="counts"></div>
+      </div>
+      <div class="row" id="strengthRow" hidden>
+        <label class="lbl" for="strength">Сила изменения <span id="strengthVal"></span></label>
+        <input type="range" id="strength" min="0.1" max="1" step="0.05" value="0.6">
+      </div>
+    </section>
+
+    <section id="videoOpts" hidden></section>
+
+    <details class="advanced">
+      <summary>Расширенные настройки</summary>
+      <div class="row">
+        <label class="lbl" for="seed">Seed</label>
+        <div class="inline"><input id="seed" type="number" min="0" placeholder="случайный"><button type="button" id="seedClear" title="Случайный">🎲</button></div>
+      </div>
+      <div class="row">
+        <label class="lbl" for="steps">Шаги</label>
+        <input id="steps" type="number" min="1" max="100" placeholder="по умолчанию модели">
+      </div>
+      <div class="row">
+        <label class="lbl" for="refMp">Разрешение референсов, Мп</label>
+        <input id="refMp" type="number" min="0.1" max="2" step="0.1" placeholder="авто">
+      </div>
+      <label class="check"><input type="checkbox" id="rolePrompts" checked> Объяснять модели роли референсов</label>
+    </details>
+
+    <div class="error" id="formError" hidden></div>
+    <button type="submit" class="go" id="go">Генерировать</button>
+  </form>
+
+  <section class="feed">
+    <div class="feed-head">
+      <h2>Результаты</h2>
+      <label class="check"><input type="checkbox" id="favOnly"> только избранное</label>
+    </div>
+    <div id="jobs"></div>
+    <p class="empty" id="empty" hidden>Здесь появятся результаты генераций.</p>
+  </section>
+</main>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Закрыть">×</button>
+  <button class="lb-nav prev" id="lbPrev" aria-label="Назад">‹</button>
+  <div class="lb-media" id="lbMedia"></div>
+  <button class="lb-nav next" id="lbNext" aria-label="Вперёд">›</button>
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

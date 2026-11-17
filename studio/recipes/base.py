@@ -4,6 +4,7 @@ from .. import config
 ROLES = {
     "base": "Исходник для редактирования",
     "start": "Начальный кадр",
+    "end": "Конечный кадр",
     "character": "Персонаж",
     "outfit": "Внешность / одежда",
     "environment": "Окружение",

@@ -181,7 +181,7 @@ async def _run(job):
                     raise ComfyError("Ключевой кадр не был сохранён")
                 dst = config.COMFY_INPUT / f"{job_id}-kf{i}.png"
                 shutil.copy2(files[0], dst)
-                var_refs = [{"file": dst.name, "role": "start", "width": meta["width"], "height": meta["height"]}]
+                var_refs = [{"file": dst.name, "role": "start", "width": meta["width"], "height": meta["height"]}] + [r for r in refs if r["role"] == "end"]
         state["progress"] = (i + 1) / count
 
     meta = metas[-1]

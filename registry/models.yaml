@@ -30,6 +30,22 @@ models:
     studio_recipe: studio/recipes/klein.py
     notes: Default studio image model. t2i 1 MP ~46 s; 2-reference generation ~3-3.5 min; edit and img2img verified 2026-11-17.
 
+  - id: wan2.2-i2v-14b
+    role: video
+    status: experimental
+    license_status: green
+    license: Apache-2.0
+    source: https://huggingface.co/QuantStack/Wan2.2-I2V-A14B-GGUF (GGUF), https://huggingface.co/Comfy-Org/Wan-2.2 (LoRA, VAE)
+    exact_checkpoint: unet/Wan2.2-I2V-A14B-HighNoise-Q4_K_M.gguf + unet/Wan2.2-I2V-A14B-LowNoise-Q4_K_M.gguf
+    sha256: 836250abfaa3411694e2c9cf3a0cc18265329d5156d81aa116d5366b0f8f02e7 (high), e2f98d834af009d035c6b0918268f2eba0aa8a63025ce942277e2384d40b0866 (low)
+    components:
+      - loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors  # d176c808d6fc461999b68e321efcb7501b20b8c3797523ed0df14f7d1deff11e
+      - loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors   # 024f21de095bc8fad9809ded3e9e49a2e170dcf27075da8145ba7d60d8aab7f9
+      - vae/wan_2.1_vae.safetensors                                      # 2fc39d31359a4b0a64f55876d8ff7fa8d780956ae2cb13463b0223e15148976b
+      - text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors
+    studio_recipe: studio/recipes/wan.py (WanI2V14B)
+    notes: Downloaded and hash-verified 2026-11-17. i2v and first+last frame, 16 fps, 4 steps with lightx2v LoRA.
+
   - id: wan2.2-ti2v-5b
     role: video
     status: experimental

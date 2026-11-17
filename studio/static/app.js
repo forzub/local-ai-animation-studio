@@ -10,7 +10,7 @@ const S = {
   jobs: new Map(), favOnly: false,
   video: {},           // выбранные параметры видео
 };
-const MODE_HINT_ROLE = { edit: "base", i2i: "base", i2v: "start" };
+const MODE_HINT_ROLE = { edit: "base", i2i: "base", i2v: "start", flf: "start" };
 
 async function api(path, opts = {}) {
   const r = await fetch(path, { headers: opts.body && !(opts.body instanceof FormData) ? { "Content-Type": "application/json" } : {}, ...opts });
@@ -89,12 +89,15 @@ function renderRefs() {
       <select data-i="${i}">${roles.map((k) => `<option value="${k}" ${k === r.role ? "selected" : ""}>${esc(S.roles[k] || k)}</option>`).join("")}</select>
     </div>`).join("");
   $("#drop").hidden = m && S.refs.length >= m.max_refs;
+  const va = $("#vAspectRow");
+  if (va) va.hidden = S.refs.some((r) => r.role === "start");
 }
 
 function defaultRole() {
   const m = currentModel();
   const need = MODE_HINT_ROLE[S.mode];
   if (need && m?.ref_roles.includes(need) && !S.refs.some((r) => r.role === need)) return need;
+  if (S.mode === "flf" && !S.refs.some((r) => r.role === "end")) return "end";
   if (m?.ref_roles.includes("character") && !S.refs.some((r) => r.role === "character")) return "character";
   return m?.ref_roles.find((x) => x !== "base" && x !== "start" && x !== "end") || "character";
 }
@@ -140,7 +143,7 @@ function renderVideoOpts() {
       ${Object.entries(vo.cameras).map(([k, v]) => `<option value="${k}" ${k === sel.camera ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></div>
     ${vo.time_note ? `<p class="hint">${esc(vo.time_note)}</p>` : ""}`;
   if (!vo.aspects.includes(S.aspect)) S.aspect = vo.aspects[0];
-  $("#vAspectRow").hidden = S.mode === "i2v";
+  $("#vAspectRow").hidden = S.refs.some((r) => r.role === "start");
   box.querySelectorAll("#vaspects button").forEach((b) => b.classList.toggle("active", b.dataset.v === S.aspect));
 }
 
@@ -372,7 +375,7 @@ function bind() {
     if (e.target.id === "vcam") S.video.camera = e.target.value;
   });
   $("#refs").addEventListener("click", (e) => { const b = e.target.closest(".rm"); if (b) { S.refs.splice(Number(b.dataset.i), 1); renderRefs(); } });
-  $("#refs").addEventListener("change", (e) => { if (e.target.matches("select")) S.refs[Number(e.target.dataset.i)].role = e.target.value; });
+  $("#refs").addEventListener("change", (e) => { if (e.target.matches("select")) { S.refs[Number(e.target.dataset.i)].role = e.target.value; renderRefs(); } });
   const drop = $("#drop");
   drop.addEventListener("click", () => $("#fileInput").click());
   drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#fileInput").click(); } });

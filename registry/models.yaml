@@ -74,6 +74,20 @@ models:
     studio_recipe: studio/recipes/images.py (QwenImage21)
     notes: Downloaded and hash-verified 2026-11-17 (needs ComfyUI >= Sep 2026, engine updated to ee34406f5). t2i 16:9 1 MP 138 s; edit with 2 refs (base + style) 339 s. Turbo, fixed 8 sigmas, cfg 1.
 
+  - id: flux2-klein-9b
+    role: image
+    status: production-approved
+    license_status: yellow
+    license: FLUX Non-Commercial License (gated, agreement accepted by owner 2026-11-17)
+    source: https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8 (model), https://huggingface.co/Comfy-Org/Flux-2-Klein-9B (text encoder)
+    exact_checkpoint: diffusion_models/flux-2-klein-9b-fp8.safetensors
+    sha256: 865ba09f5b4c3cbd3468a4bd3acb9fcb2f8740c54317482f0bcd4ed1d3655cee
+    components:
+      - text_encoders/qwen_3_8b_fp8mixed.safetensors  # abad16806e0cbabc54e0325d6565847443fe396d5f0be38bb3cd3fe75a1201d6
+      - vae/flux2-vae.safetensors
+    studio_recipe: studio/recipes/klein.py (Klein9B)
+    notes: Downloaded and hash-verified 2026-11-17. t2i 16:9 1 MP 145 s; edit with 2 refs (base + style) 559 s, strong style transfer. Non-commercial only.
+
   - id: z-image-turbo
     role: image
     status: production-approved

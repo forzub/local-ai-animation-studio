@@ -21,6 +21,8 @@ class Klein4B(Recipe):
         "Каждый референс заметно замедляет генерацию (2 референса ≈ 3,5 мин на 1 Мп).",
     ]
     defaults = {"steps": 4, "megapixels": 1.0, "aspect": "1:1", "strength": 0.6}
+    unet_file = "flux-2-klein-4b-fp8.safetensors"
+    clip_file = "qwen_3_4b.safetensors"
 
     def validate(self, p):
         err = super().validate(p)
@@ -55,8 +57,8 @@ class Klein4B(Recipe):
 
         ref_mp = float(p.get("ref_megapixels") or (1.0 if len(refs) <= 2 else 0.6))
         g = {
-            "unet": {"class_type": "UNETLoader", "inputs": {"unet_name": "flux-2-klein-4b-fp8.safetensors", "weight_dtype": "default"}},
-            "clip": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_4b.safetensors", "type": "flux2", "device": "default"}},
+            "unet": {"class_type": "UNETLoader", "inputs": {"unet_name": self.unet_file, "weight_dtype": "default"}},
+            "clip": {"class_type": "CLIPLoader", "inputs": {"clip_name": self.clip_file, "type": "flux2", "device": "default"}},
             "vae": {"class_type": "VAELoader", "inputs": {"vae_name": "flux2-vae.safetensors"}},
             "pos": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["clip", 0], "text": prompt}},
             "neg": {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["pos", 0]}},
@@ -90,3 +92,19 @@ class Klein4B(Recipe):
             sigmas = ["sch", 0]
         g["samp"] = {"class_type": "SamplerCustomAdvanced", "inputs": {"noise": ["noise", 0], "guider": ["guid", 0], "sampler": ["sel", 0], "sigmas": sigmas, "latent_image": ["lat", 0]}}
         return g, {"width": w, "height": h, "seed": seed, "prompt_sent": prompt}
+
+
+class Klein9B(Klein4B):
+    id = "flux2-klein-9b"
+    name = "FLUX.2 Klein 9B"
+    files = ["diffusion_models/flux-2-klein-9b-fp8.safetensors", "text_encoders/qwen_3_8b_fp8mixed.safetensors", "vae/flux2-vae.safetensors"]
+    license = "FLUX Non-Commercial License (только некоммерческое использование)"
+    description = ("Старшая версия Klein: те же режимы и до 6 референсов, но заметно лучше детализация, анатомия и следование промпту. "
+                   "Медленнее 4B — модель и энкодер не помещаются в 6 ГБ целиком.")
+    limits = [
+        "Роли референсов передаются текстовой инструкцией «image N …»; «Композиция / поза» соблюдается приблизительно.",
+        "Замер на Quadro RTX 3000 (1 Мп): по тексту ≈ 2,5 мин, правка с 2 референсами ≈ 9 мин.",
+        "Иногда дорисовывает в углу псевдо-подпись или логотип — помогает «no text, no watermark» в промпте.",
+    ]
+    unet_file = "flux-2-klein-9b-fp8.safetensors"
+    clip_file = "qwen_3_8b_fp8mixed.safetensors"

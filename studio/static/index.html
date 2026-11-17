@@ -14,7 +14,15 @@
     <button data-kind="video">Видео</button>
   </nav>
   <div class="status" id="status" title="Состояние движка">движок запускается…</div>
+  <button class="btn" id="freeBtn" title="Выгрузить модели из видеопамяти и ОЗУ">Освободить память</button>
+  <button class="btn" id="modelsBtn">Модели</button>
 </header>
+
+<dialog class="modal" id="modelsDlg">
+  <div class="modal-head"><h2>Модели</h2><button class="btn" id="modelsClose">Закрыть</button></div>
+  <div id="modelsList"></div>
+  <p class="hint">Новая модель подключается файлом-рецептом в <code>studio/recipes/</code>; веса лежат в <code>vendor/ComfyUI/models</code>.</p>
+</dialog>
 
 <main class="layout">
   <form class="composer" id="composer" autocomplete="off">
@@ -83,6 +91,10 @@
       <div class="row">
         <label class="lbl" for="refMp">Разрешение референсов, Мп</label>
         <input id="refMp" type="number" min="0.1" max="2" step="0.1" placeholder="авто">
+      </div>
+      <div class="row" id="negativeRow">
+        <label class="lbl" for="negative">Негативный промпт (видео)</label>
+        <textarea id="negative" rows="2" placeholder="по умолчанию — стандартный для Wan"></textarea>
       </div>
       <label class="check"><input type="checkbox" id="rolePrompts" checked> Объяснять модели роли референсов</label>
     </details>

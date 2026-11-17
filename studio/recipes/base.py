@@ -3,6 +3,7 @@ from .. import config
 
 ROLES = {
     "base": "Исходник для редактирования",
+    "start": "Начальный кадр",
     "character": "Персонаж",
     "outfit": "Внешность / одежда",
     "environment": "Окружение",
@@ -53,6 +54,7 @@ class Recipe:
     description = ""
     limits = []  # честные ограничения, показываются в интерфейсе
     defaults = {}
+    video_options = None
 
     def missing_files(self):
         return [f for f in self.files if not (config.COMFY_MODELS / f).exists()]
@@ -62,6 +64,7 @@ class Recipe:
             "id": self.id, "name": self.name, "kind": self.kind, "modes": self.modes,
             "max_refs": self.max_refs, "ref_roles": self.ref_roles, "license": self.license,
             "description": self.description, "limits": self.limits, "defaults": self.defaults,
+            "video_options": self.video_options,
             "missing": self.missing_files(),
         }
 

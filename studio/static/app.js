@@ -62,11 +62,13 @@ function setMode(mode) {
   $("#strengthRow").hidden = mode !== "i2i";
   $("#imageOpts").hidden = S.kind !== "image";
   $("#videoOpts").hidden = S.kind !== "video";
+  $("#negativeRow").hidden = S.kind !== "video";
   // назначить исходник, если режим его требует
   const need = MODE_HINT_ROLE[mode];
   if (need && S.refs.length && !S.refs.some((r) => r.role === need) && m?.ref_roles.includes(need)) S.refs[0].role = need;
   fixRoles();
   renderRefs();
+  renderVideoOpts();
 }
 
 function fixRoles() {
@@ -161,6 +163,8 @@ function collectParams() {
   };
   if (S.kind === "video") {
     p.duration = Number(S.video.duration); p.resolution = S.video.resolution; p.camera = S.video.camera || null;
+    p.count = 1;
+    p.negative = $("#negative").value.trim() || null;
   }
   return p;
 }
@@ -197,12 +201,14 @@ function loadParams(job, keepSeed) {
   $("#rolePrompts").checked = p.role_prompts !== false;
   if (p.strength) $("#strength").value = p.strength;
   if (m.kind === "video") S.video = { duration: p.duration, resolution: p.resolution, camera: p.camera || "" };
+  $("#negative").value = p.negative || "";
   renderChips(); renderRefs(); renderVideoOpts(); updateStrength();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 async function useOutput(job, out, action) {
-  const u = await api("/api/uploads/from-output", { method: "POST", body: JSON.stringify({ job_id: job.id, file: out.file }) });
+  const frame = out.media === "video" ? "last" : null;
+  const u = await api("/api/uploads/from-output", { method: "POST", body: JSON.stringify({ job_id: job.id, file: out.file, frame }) });
   if (action === "ref") { addRefFromUpload(u); return; }
   if (action === "edit") {
     setKind("image"); setMode("edit");
@@ -260,9 +266,11 @@ function outHTML(j, o, i) {
   const media = o.media === "video"
     ? `<video src="${url}" data-lb="${i}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause()"></video>`
     : `<img src="${url}" data-lb="${i}" loading="lazy" alt="результат ${i + 1}">`;
-  return `<div class="out">${media}<div class="bar">
+  const tag = o.role === "keyframe" ? `<span class="tag">ключевой кадр</span>` : "";
+  return `<div class="out">${media}${tag}<div class="bar">
       <a class="btn" href="${url}?download=true">Скачать</a>
-      ${o.media === "video" ? "" : `<button class="btn" data-out="${i}" data-use="ref">В референсы</button>
+      ${o.media === "video" ? `<button class="btn" data-out="${i}" data-use="animate" title="Последний кадр станет началом нового видео">Продолжить с последнего кадра</button>
+      <button class="btn" data-out="${i}" data-use="ref">Последний кадр в референсы</button>` : `<button class="btn" data-out="${i}" data-use="ref">В референсы</button>
       <button class="btn" data-out="${i}" data-use="edit">Редактировать</button>
       <button class="btn" data-out="${i}" data-use="animate">Анимировать</button>`}
     </div></div>`;
@@ -307,7 +315,23 @@ async function refreshJobs() {
   pollTimer = setTimeout(refreshJobs, active ? 1000 : 8000);
 }
 
-async function refreshStatus() {
+function showModels() {
+  const kinds = { image: "Изображения", video: "Видео" };
+  $("#modelsList").innerHTML = S.models.map((m) => `
+    <div class="mcard">
+      <h3>${esc(m.name)} <span class="muted">· ${kinds[m.kind] || m.kind} · ${esc(m.license)}</span>
+        ${m.missing.length ? `<span class="bad-t">нет файлов</span>` : `<span class="ok-t">готова</span>`}</h3>
+      <div class="hint">${esc(m.description)}</div>
+      <div class="hint">Режимы: ${Object.values(m.modes).map(esc).join(", ")}${m.max_refs ? ` · до ${m.max_refs} референсов` : ""}</div>
+      ${m.missing.length ? `<ul>${m.missing.map((f) => `<li>отсутствует <code>${esc(f)}</code></li>`).join("")}</ul>` : ""}
+      ${m.limits.length ? `<ul>${m.limits.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>` : ""}
+    </div>`).join("");
+  $("#modelsDlg").showModal();
+}
+
+let statusTimer = null;
+async function refreshStatus(once) {
+  if (once === true) clearTimeout(statusTimer);
   try {
     const s = await api("/api/status");
     const el = $("#status");
@@ -315,7 +339,7 @@ async function refreshStatus() {
     const gpu = s.gpu ? `${s.gpu.name} · свободно ${(s.gpu.vram_free / 2 ** 30).toFixed(1)} из ${(s.gpu.vram_total / 2 ** 30).toFixed(1)} ГБ` : "движок запускается…";
     el.innerHTML = `<span class="dot"></span>${esc(gpu)}${s.queued ? ` · в работе: ${s.queued}` : ""}`;
   } catch { $("#status").textContent = "сервер недоступен"; }
-  setTimeout(refreshStatus, 5000);
+  statusTimer = setTimeout(refreshStatus, 5000);
 }
 
 /* ---------- лайтбокс ---------- */
@@ -382,6 +406,13 @@ function bind() {
       if (act === "del") { if (!confirm("Удалить задачу и её файлы с диска?")) return; await api(`/api/jobs/${job.id}`, { method: "DELETE" }); }
       if (act) refreshJobs();
     } catch (err) { alert(err.message); }
+  });
+  $("#modelsBtn").addEventListener("click", showModels);
+  $("#modelsClose").addEventListener("click", () => $("#modelsDlg").close());
+  $("#freeBtn").addEventListener("click", async () => {
+    const b = $("#freeBtn"); b.disabled = true;
+    try { await api("/api/engine/free", { method: "POST" }); } catch (e) { alert(e.message); }
+    b.disabled = false; refreshStatus(true);
   });
   $("#lbClose").addEventListener("click", closeLB);
   $("#lbPrev").addEventListener("click", () => stepLB(-1));

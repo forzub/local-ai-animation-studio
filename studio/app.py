@@ -7,6 +7,7 @@ import shutil
 from contextlib import asynccontextmanager
 from typing import Optional
 
+import av
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -111,11 +112,24 @@ async def upload(file: UploadFile = File(...)):
 class FromOutput(BaseModel):
     job_id: str
     file: str
+    frame: Optional[str] = None  # "first" | "last" для видео
 
 
 @app.post("/api/uploads/from-output")
 def upload_from_output(body: FromOutput):
-    return _store_image(_output_path(body.job_id, body.file).read_bytes())
+    path = _output_path(body.job_id, body.file)
+    if path.suffix.lower() not in (".mp4", ".webm", ".mkv"):
+        return _store_image(path.read_bytes())
+    frame = None
+    with av.open(str(path)) as c:
+        for frame in c.decode(video=0):
+            if body.frame == "first":
+                break
+    if frame is None:
+        raise HTTPException(400, "В видео нет кадров")
+    buf = io.BytesIO()
+    frame.to_image().save(buf, "PNG")
+    return _store_image(buf.getvalue())
 
 
 @app.get("/uploads/{upload_id}")

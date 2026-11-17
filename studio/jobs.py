@@ -127,19 +127,12 @@ async def _run(job):
             refs.append({"file": dst.name, "role": r["role"], "width": im.width, "height": im.height})
 
     count = max(1, int(p.get("count") or 1))
-    outputs, graphs = [], []
+    outputs, graphs, metas = [], [], []
     state = live[job_id]
-    for i in range(count):
-        graph, meta = recipe.build(p, refs, i)
-        graphs.append(graph)
+    has_keyframe = hasattr(recipe, "keyframe")
 
-        def on_progress(stage, step, total, i=i):
-            if stage:
-                state["stage"] = f"{stage}" + (f" · вариант {i + 1}/{count}" if count > 1 else "")
-            if step is not None and total:
-                state["progress"] = (i + step / total) / count
-
-        result = await engine.run(graph, on_progress, lambda: job_id in _cancel)
+    def collect(result, meta, role=None):
+        files = []
         for node_out in result.values():
             for key in ("images", "videos", "gifs"):
                 for f in node_out.get(key, []):
@@ -148,13 +141,52 @@ async def _run(job):
                     src = config.COMFY_OUTPUT / f.get("subfolder", "") / f["filename"]
                     name = f"{len(outputs) + 1:02d}{src.suffix}"
                     shutil.move(src, out_dir / name)
-                    outputs.append({"file": name, "seed": meta["seed"], "width": meta["width"], "height": meta["height"],
-                                    "media": "video" if src.suffix.lower() in (".mp4", ".webm") else "image"})
+                    out = {"file": name, "seed": meta["seed"], "width": meta["width"], "height": meta["height"],
+                           "media": "video" if src.suffix.lower() in (".mp4", ".webm", ".mkv") else "image"}
+                    if role:
+                        out["role"] = role
+                    outputs.append(out)
+                    files.append(out_dir / name)
         _set(job_id, outputs=outputs)
+        return files
+
+    for i in range(count):
+        # этапы варианта: [ключевой кадр], основной граф
+        stages = []
+        kf = recipe.keyframe(p, refs, i) if has_keyframe else None
+        if kf:
+            stages.append(("keyframe", kf))
+        n_stages = len(stages) + 1
+        var_refs = refs
+
+        for s in range(n_stages):
+            if s < len(stages):
+                role, (graph, meta) = stages[s]
+            else:
+                role, (graph, meta) = None, recipe.build(p, var_refs, i)
+            graphs.append(graph)
+            metas.append(meta)
+            label = ("Ключевой кадр: " if role == "keyframe" else "")
+
+            def on_progress(stage, step, total, i=i, s=s, label=label):
+                if stage:
+                    state["stage"] = label + stage + (f" · вариант {i + 1}/{count}" if count > 1 else "")
+                if step is not None and total:
+                    state["progress"] = (i + (s + step / total) / n_stages) / count
+
+            result = await engine.run(graph, on_progress, lambda: job_id in _cancel)
+            files = collect(result, meta, role)
+            if role == "keyframe":
+                if not files:
+                    raise ComfyError("Ключевой кадр не был сохранён")
+                dst = config.COMFY_INPUT / f"{job_id}-kf{i}.png"
+                shutil.copy2(files[0], dst)
+                var_refs = [{"file": dst.name, "role": "start", "width": meta["width"], "height": meta["height"]}]
         state["progress"] = (i + 1) / count
 
+    meta = metas[-1]
     sidecar = {"job": job_id, "model": recipe.id, "model_files": recipe.files, "license": recipe.license,
-               "params": p, "prompt_sent": meta.get("prompt_sent"), "outputs": outputs, "graphs": graphs,
+               "params": p, "prompt_sent": meta.get("prompt_sent"), "stage_meta": metas, "outputs": outputs, "graphs": graphs,
                "created": datetime.fromtimestamp(job["created"]).isoformat()}
     (out_dir / "job.json").write_text(json.dumps(sidecar, ensure_ascii=False, indent=1), encoding="utf-8")
     return outputs

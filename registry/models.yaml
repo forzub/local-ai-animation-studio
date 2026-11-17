@@ -16,15 +16,33 @@ models:
     sha256: e9476a13728cd75d8279f6ec8bad753a66a1957ca375a1464dc63b37db6e3916
     notes: Diagnostic baseline only. End-to-end ComfyUI generation accepted on Quadro RTX 3000 6 GB. Not selected as production image model.
 
-  - id: wan2.2-ti2v-5b
-    role: video
-    status: candidate
+  - id: flux2-klein-4b
+    role: image
+    status: production-approved
     license_status: green
     license: Apache-2.0
-    source: TBD
-    exact_checkpoint: TBD
-    sha256: TBD
-    notes: Primary I2V/T2V candidate. Need low-VRAM quantization/offload validation on 6 GB VRAM.
+    source: UNVERIFIED - FLUX.2 Klein 4B fp8 for ComfyUI; record exact download URL
+    exact_checkpoint: diffusion_models/flux-2-klein-4b-fp8.safetensors
+    sha256: 97ed34fe0567e436200f2faee3939b88f2b5d99f8af2a4dc16532c4245c0ccb6
+    components:
+      - text_encoders/qwen_3_4b.safetensors  # 6c671498573ac2f7a5501502ccce8d2b08ea6ca2f661c458e708f36b36edfc5a
+      - vae/flux2-vae.safetensors            # d64f3a68e1cc4f9f4e29b6e0da38a0204fe9a49f2d4053f0ec1fa1ca02f9c4b5
+    studio_recipe: studio/recipes/klein.py
+    notes: Default studio image model. t2i 1 MP ~46 s; 2-reference generation ~3-3.5 min; edit and img2img verified 2026-11-17.
+
+  - id: wan2.2-ti2v-5b
+    role: video
+    status: experimental
+    license_status: green
+    license: Apache-2.0
+    source: UNVERIFIED - GGUF repack of Wan2.2-TI2V-5B; record exact download URL
+    exact_checkpoint: unet/Wan2.2-TI2V-5B-Q4_K_M.gguf
+    sha256: 95b19697b7f98e65b0a543640e9ca7b4dfec32e2a6e3731e8e10708be52655e2
+    components:
+      - text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors  # c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68
+      - vae/wan2.2_vae.safetensors                             # e40321bd36b9709991dae2530eb4ac303dd168276980d3e9bc4b6e2b75fed156
+    studio_recipe: studio/recipes/wan.py
+    notes: Studio video model (t2v / i2v). 2 s at 832x480 ~13 min, draft ~2-5 min. Characters drift at draft resolution; T2V weak. Upgrade candidate - Wan 2.2 I2V A14B GGUF + lightx2v 4-step LoRA.
 
   - id: ltx-video-2b-distilled
     role: video

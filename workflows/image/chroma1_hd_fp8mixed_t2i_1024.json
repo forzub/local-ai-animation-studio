@@ -1,0 +1,865 @@
+{
+  "id": "ddbdfcb3-03b1-4f97-aa07-c6b78d3d3e43",
+  "revision": 0,
+  "last_node_id": 15,
+  "last_link_id": 16,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "UNETLoader",
+      "pos": [
+        -1040,
+        -180
+      ],
+      "size": [
+        420,
+        90
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "title": "Chroma1-HD diffusion",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.57",
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "Chroma1-HD-fp8mixed-final.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CLIPLoader",
+      "pos": [
+        -1040,
+        -40
+      ],
+      "size": [
+        420,
+        120
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "T5 XXL FP8",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.57",
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "t5xxl_fp8_e4m3fn_scaled.safetensors",
+        "chroma",
+        "default"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "VAELoader",
+      "pos": [
+        -1040,
+        120
+      ],
+      "size": [
+        420,
+        70
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "EmptySD3LatentImage",
+      "pos": [
+        -1040,
+        300
+      ],
+      "size": [
+        420,
+        120
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Image size — first test",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "EmptySD3LatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ]
+    },
+    {
+      "id": 4,
+      "type": "ModelSamplingAuraFlow",
+      "pos": [
+        -520,
+        -180
+      ],
+      "size": [
+        250,
+        70
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            2,
+            3
+          ]
+        }
+      ],
+      "title": "Flow Shift = 1",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.52",
+        "Node name for S&R": "ModelSamplingAuraFlow"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 5,
+      "type": "T5TokenizerOptions",
+      "pos": [
+        -520,
+        -40
+      ],
+      "size": [
+        250,
+        90
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            5,
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "T5TokenizerOptions"
+      },
+      "widgets_values": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -210,
+        -30
+      ],
+      "size": [
+        540,
+        280
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "POSITIVE PROMPT",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A cinematic full-body photograph of an adult fictional character, natural anatomy, realistic proportions, detailed skin and hair, coherent hands and feet, physically plausible pose, natural lighting, detailed environment, sharp focus, high detail, photographic realism."
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -210,
+        300
+      ],
+      "size": [
+        540,
+        230
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "NEGATIVE PROMPT",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "bad anatomy, extra limbs, missing limbs, duplicated body parts, extra fingers, fused fingers, deformed hands, malformed feet, distorted face, bad proportions, blurry, low detail, watermark, text, signature, incoherent composition, artifacts"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "RandomNoise",
+      "pos": [
+        410,
+        10
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "SEED",
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.57",
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        243759308503783,
+        "fixed"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CFGGuider",
+      "pos": [
+        410,
+        150
+      ],
+      "size": [
+        240,
+        110
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 7
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "CFGGuider"
+      },
+      "widgets_values": [
+        3.8
+      ]
+    },
+    {
+      "id": 12,
+      "type": "KSamplerSelect",
+      "pos": [
+        410,
+        310
+      ],
+      "size": [
+        240,
+        70
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.49",
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "BetaSamplingScheduler",
+      "pos": [
+        410,
+        430
+      ],
+      "size": [
+        300,
+        120
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.65",
+        "Node name for S&R": "BetaSamplingScheduler"
+      },
+      "widgets_values": [
+        26,
+        0.45,
+        0.45
+      ]
+    },
+    {
+      "id": 11,
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        780,
+        60
+      ],
+      "size": [
+        320,
+        350
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 9
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 10
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 11
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 12
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "SamplerCustomAdvanced"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "VAEDecode",
+      "pos": [
+        1160,
+        110
+      ],
+      "size": [
+        250,
+        80
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 14
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.3.27",
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "SaveImage",
+      "pos": [
+        1460,
+        40
+      ],
+      "size": [
+        450,
+        500
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "CHROMA1_HD_TEST"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      4,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      4,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      3,
+      4,
+      0,
+      10,
+      0,
+      "MODEL"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "CLIP"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      5,
+      0,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      7,
+      6,
+      0,
+      9,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      8,
+      7,
+      0,
+      9,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      9,
+      8,
+      0,
+      11,
+      0,
+      "NOISE"
+    ],
+    [
+      10,
+      9,
+      0,
+      11,
+      1,
+      "GUIDER"
+    ],
+    [
+      11,
+      12,
+      0,
+      11,
+      2,
+      "SAMPLER"
+    ],
+    [
+      12,
+      10,
+      0,
+      11,
+      3,
+      "SIGMAS"
+    ],
+    [
+      13,
+      3,
+      0,
+      11,
+      4,
+      "LATENT"
+    ],
+    [
+      14,
+      11,
+      0,
+      13,
+      0,
+      "LATENT"
+    ],
+    [
+      15,
+      14,
+      0,
+      13,
+      1,
+      "VAE"
+    ],
+    [
+      16,
+      13,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Chroma1-HD FP8 Mixed — 1024x1024 first test",
+      "bounding": [
+        -1080,
+        -230,
+        3040,
+        840
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        900,
+        400
+      ]
+    },
+    "notes": "Built from the official Lodestones Chroma1-HD ComfyUI graph. Uses the locally installed Chroma1-HD-fp8mixed-final.safetensors, t5xxl_fp8_e4m3fn_scaled.safetensors and ae.safetensors. If the standard UNETLoader rejects the mixed/hybrid FP8 checkpoint at runtime, use the Chroma hybrid FP8 loader or switch to Chroma1-HD-fp8_scaled_rev2.safetensors."
+  },
+  "version": 0.4
+}
